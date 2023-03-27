@@ -1,0 +1,6 @@
+to generate translation code
+flutter pub run easy_localization:generate -S "assets/translations"
+
+-----------------------------
+to generate keys again
+flutter pub run easy_localization:generate -S "assets/translations" -f keys -o  "keys.g.dart"
