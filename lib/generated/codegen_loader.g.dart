@@ -49,7 +49,11 @@ class CodegenLoader extends AssetLoader{
   "delete_warning_comment_beginning": "السجل التابع للوحة السايرة الآتية ",
   "delete_warning_comment_end": "سيتم مسحة. الرجاء التأكد من صحة العملية",
   "delete_warning_deleteButton": "حذف",
-  "delete_warning_deleteCancel": "الغاء الأمر"
+  "delete_warning_deleteCancel": "الغاء الأمر",
+  "change_lanuage_alert_title": "يرجى إعادة التشغيل البرنامج",
+  "change_language_alert_text": "  سيتم تطبيق التعديلات عند  إعادة تشغيل البرنامج. يرجى  إعادة تشغيل البنامج من اجل تطبيق التعديلات في اي وقت متاح لذلك",
+  "change_language_alert_now": "إعادة التشغيل الان",
+  "change_language_alert_later": "إعادة التشغيل لاحقا"
 };
 static const Map<String,dynamic> en = {
   "email": "Email",
@@ -86,7 +90,11 @@ static const Map<String,dynamic> en = {
   "delete_warning_comment_beginning": "The record belonging to car",
   "delete_warning_comment_end": "will be deleted. This will not effect any other record belonging to the same car, but it will delete the record selected.",
   "delete_warning_deleteButton": "DELETE",
-  "delete_warning_deleteCancel": "CANCEL"
+  "delete_warning_deleteCancel": "CANCEL",
+  "change_lanuage_alert_title": "Restarting The App is Required",
+  "change_language_alert_text": "For the changes to be applied, you need to restart the app. Next time you launch the app the changes will be applied.",
+  "change_language_alert_now": "Restart Now",
+  "change_language_alert_later": "Restart Later"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ar": ar, "en": en};
 }

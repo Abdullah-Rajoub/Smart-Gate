@@ -33,5 +33,9 @@
   "delete_warning_comment_beginning": "السجل التابع للوحة السايرة الآتية ",
   "delete_warning_comment_end": "سيتم مسحة. الرجاء التأكد من صحة العملية",
   "delete_warning_deleteButton": "حذف",
-  "delete_warning_deleteCancel": "الغاء الأمر"
+  "delete_warning_deleteCancel": "الغاء الأمر",
+  "change_lanuage_alert_title": "يرجى إعادة التشغيل البرنامج",
+  "change_language_alert_text": "  سيتم تطبيق التعديلات عند  إعادة تشغيل البرنامج. يرجى  إعادة تشغيل البنامج من اجل تطبيق التعديلات في اي وقت متاح لذلك",
+  "change_language_alert_now": "إعادة التشغيل الان",
+  "change_language_alert_later": "إعادة التشغيل لاحقا"
 }

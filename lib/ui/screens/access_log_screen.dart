@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:date_format/date_format.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smart_gate/generated/keys.g.dart';
 import 'package:smart_gate/models/access_log_info.dart';
 import 'package:smart_gate/network/http_helper.dart';
@@ -11,7 +12,7 @@ import 'package:smart_gate/ui/components/access_log_components/date_picker.dart'
 import 'package:smart_gate/ui/components/access_log_components/search_text_field.dart';
 import 'package:smart_gate/ui/components/general/translation_button.dart';
 import 'package:smart_gate/ui/screens/loading_screen.dart';
-
+import 'package:smart_gate/utility/presistant_storage.dart';
 // Testing
 // AccessLogInfo(
 // timeStamp: '2023-03-21',
@@ -35,6 +36,7 @@ class AccessLogScreen extends StatefulWidget {
   late Iterable<Widget> listOfLogItems;
   bool isLoading = true;
   late List<AccessLogInfo> accessLogInfo;
+  int currentPage = 1;
   @override
   State<AccessLogScreen> createState() => _AccessLogScreenState();
 }
@@ -62,13 +64,16 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
 
 // phase Three
   void getInfo() async {
-    var respons = await HttpHelper.getAccessLogInfo();
+    var respons = await HttpHelper.getAccessLogInfo(widget.currentPage);
 
     var jsonResponse = await jsonDecode(respons.body);
     //phase 1: creating a list of logInfo elements
     widget.accessLogInfo = createListOfLogInfo(jsonResponse);
     //phase 2: putting the logInfo elements into indidual widgets AccessLogItems
     widget.listOfLogItems = createListOfLogItems(widget.accessLogInfo);
+    var currentLanguage = await PresistentStorage().getCurrentLanguage();
+    if (currentLanguage != null)
+      EasyLocalization.of(context)?.setLocale(Locale(currentLanguage));
     setState(() {
       widget.isLoading = false;
     });
@@ -122,7 +127,7 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
     });
   }
 
-  //Filtering based on parking, WARNING: may cause permentant eye blindness
+  //Filtering based on parking
   void updateListOfLogs(currentValue) async {
     // phase 1: filter the listOfLogInfo
     var updatedList;
@@ -130,29 +135,32 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
     if (widget.startDate != null && widget.endDate != null) {
       updatedList = widget.accessLogInfo.where((accessLogInfo) =>
           widget.endDate.isAfter(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          widget.startDate.isBefore(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          accessLogInfo.parkingName
+                  accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
+              widget.startDate.isBefore(DateTime.parse(
+                  accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
+              (accessLogInfo.parkingName
+                  .toLowerCase()
+                  .contains(currentValue.toString().toLowerCase())) ||
+          accessLogInfo.numLetters
+              .toLowerCase()
+              .contains(currentValue.toString().toLowerCase()) ||
+          accessLogInfo.employeeName
               .toLowerCase()
               .contains(currentValue.toString().toLowerCase()));
     } else if (widget.startDate != null) {
       updatedList = widget.accessLogInfo.where((accessLogInfo) =>
           widget.startDate.isBefore(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          accessLogInfo.parkingName
+                  accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
+              (accessLogInfo.parkingName
+                  .toLowerCase()
+                  .contains(currentValue.toString().toLowerCase())) ||
+          accessLogInfo.numLetters
+              .toLowerCase()
+              .contains(currentValue.toString().toLowerCase()) ||
+          accessLogInfo.employeeName
               .toLowerCase()
               .contains(currentValue.toString().toLowerCase()));
-    } else if (widget.endDate != null) {
-      updatedList = widget.accessLogInfo.where((accessLogInfo) =>
-          widget.endDate.isAfter(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          widget.startDate.isBefore(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          accessLogInfo.parkingName
-              .toLowerCase()
-              .contains(currentValue.toString().toLowerCase()));
-    } else {}
+    }
 
     // else if endset
     //else if start set
@@ -161,17 +169,29 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
     if (widget.endDate != null) {
       updatedList = widget.accessLogInfo.where((accessLogInfo) =>
           widget.endDate.isAfter(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          widget.startDate.isBefore(DateTime.parse(
-              accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
-          accessLogInfo.parkingName
+                  accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
+              widget.startDate.isBefore(DateTime.parse(
+                  accessLogInfo.timeStamp + ' ' + accessLogInfo.clock)) &&
+              (accessLogInfo.parkingName
+                  .toLowerCase()
+                  .contains(currentValue.toString().toLowerCase())) ||
+          accessLogInfo.numLetters
+              .toLowerCase()
+              .contains(currentValue.toString().toLowerCase()) ||
+          accessLogInfo.employeeName
               .toLowerCase()
               .contains(currentValue.toString().toLowerCase()));
     } else {
-      updatedList = widget.accessLogInfo.where((accessLogInfo) => accessLogInfo
-          .parkingName
-          .toLowerCase()
-          .contains(currentValue.toString().toLowerCase()));
+      updatedList = widget.accessLogInfo.where((accessLogInfo) =>
+          (accessLogInfo.parkingName
+              .toLowerCase()
+              .contains(currentValue.toString().toLowerCase())) ||
+          accessLogInfo.numLetters
+              .toLowerCase()
+              .contains(currentValue.toString().toLowerCase()) ||
+          accessLogInfo.employeeName
+              .toLowerCase()
+              .contains(currentValue.toString().toLowerCase()));
     }
 
     // phase 2: build a new listOfLogItems
@@ -196,37 +216,13 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
   }
 
   void translateToArabic() async {
-    EasyLocalization.of(context)?.setLocale(Locale('ar'));
+    PresistentStorage().setCurrentLanguage(locale: 'ar');
   }
 
   void translateToEnglish() async {
-    EasyLocalization.of(context)?.setLocale(Locale('en'));
+    PresistentStorage().setCurrentLanguage(locale: 'en');
   }
   //--------------------------------- Auxiliaries ----------------
-
-  // Row(
-  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  // children: [
-  // ElevatedButton(
-  // onPressed: () async {
-  // EasyLocalization.of(context)?.setLocale(Locale('en'));
-  // setState(() {
-  // widget.isLoading = true;
-  // });
-  // },
-  // child: Text("English"),
-  // ),
-  // ElevatedButton(
-  // onPressed: () async {
-  // EasyLocalization.of(context)?.setLocale(Locale('ar'));
-  // setState(() {
-  // widget.isLoading = true;
-  // });
-  // },
-  // child: Text("العربية"),
-  // ),
-  // ],
-  // )
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +230,7 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
     // getInfo();
     // createListOfLogItems(widget.accessLogInfo);
     // widget.listOfLogItems = createListOfLogItems(widget.accessLogInfo);
+    final RefreshController _refreshControler = RefreshController();
     return widget.isLoading
         ? LoadingScreen()
         : Scaffold(
@@ -283,13 +280,22 @@ class _AccessLogScreenState extends State<AccessLogScreen> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: ListTile.divideTiles(
-                            //          <-- ListTile.divideTiles
-                            context: context,
-                            tiles: widget.listOfLogItems)
-                        .toList(),
+                  child: SmartRefresher(
+                    onRefresh: () async {
+                      setState(() {
+                        widget.isLoading = true;
+                      });
+                      getInfo();
+                    },
+                    controller: _refreshControler,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: ListTile.divideTiles(
+                              //          <-- ListTile.divideTiles
+                              context: context,
+                              tiles: widget.listOfLogItems)
+                          .toList(),
+                    ),
                   ),
                 ),
               ],

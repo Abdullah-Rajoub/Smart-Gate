@@ -1,48 +1,62 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:smart_gate/generated/keys.g.dart';
+import 'package:smart_gate/utility/rounded.dart';
 
-class CustomShapeBorder extends ShapeBorder {
-  const CustomShapeBorder();
+Future<void> restartApp() async {
+  // Send a platform-specific message to request a restart
+  await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+}
 
-  @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
-    return getOuterPath(rect, textDirection: textDirection);
-  }
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    return Path()
-      ..moveTo(rect.left + 20, rect.top)
-      ..lineTo(rect.right - 20, rect.top)
-      ..arcToPoint(
-        Offset(rect.right, rect.top + 20),
-        radius: const Radius.circular(20),
-      )
-      ..lineTo(rect.right, rect.bottom - 20)
-      ..arcToPoint(
-        Offset(rect.right - 20, rect.bottom),
-        radius: const Radius.circular(20),
-      )
-      ..lineTo(rect.left + 20, rect.bottom)
-      ..arcToPoint(
-        Offset(rect.left, rect.bottom - 20),
-        radius: const Radius.circular(20),
-      )
-      ..lineTo(rect.left, rect.top + 20)
-      ..arcToPoint(
-        Offset(rect.left + 20, rect.top),
-        radius: const Radius.circular(20),
-      );
-  }
+class RestartAlertDialog extends StatelessWidget {
+  const RestartAlertDialog({Key? key}) : super(key: key);
 
   @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Center(
+          child: Text(
+        LocaleKeys.change_lanuage_alert_title.tr(),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Color.fromRGBO(241, 186, 59, 1),
+        ),
+      )),
+      content: Text(
+        LocaleKeys.change_language_alert_text.tr(),
+        style: TextStyle(
+          fontSize: 14,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(
+            LocaleKeys.change_language_alert_later.tr(),
+            style: TextStyle(color: Color.fromRGBO(241, 186, 59, 1)),
+          ),
+        ),
+        ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Color.fromRGBO(241, 186, 59, 1))),
+          onPressed: () {
+            Navigator.of(context).pop();
+            restartApp();
 
-  @override
-  ShapeBorder scale(double t) {
-    return this;
+            // Replace this with your code to restart the app
+          },
+          child: Text(
+            LocaleKeys.change_language_alert_now.tr(),
+            // style: TextStyle(color: Color.fromRGBO(241, 186, 59, 1)),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -107,7 +121,12 @@ class TranslationButton extends StatelessWidget {
                       child: TextButton(
                         onPressed: () {
                           translateToArabic();
-                          Navigator.pop(context);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return RestartAlertDialog();
+                            },
+                          );
                         },
                         child: Material(
                           color: Colors.transparent,
@@ -129,7 +148,12 @@ class TranslationButton extends StatelessWidget {
                     TextButton(
                       onPressed: () async {
                         translateToEnglish();
-                        Navigator.pop(context);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return RestartAlertDialog();
+                          },
+                        );
                         // EasyLocalization.of(context)?.setLocale(Locale('en'));
                       },
                       child: Container(

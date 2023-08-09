@@ -35,7 +35,7 @@ class AccessLogItem extends StatelessWidget {
     // putting the list into two strings
     String lettersString = letters[1];
     String numsString = numbers[0];
-    return numsString + ' | ' + lettersString;
+    return lettersString + ' | ' + numsString;
   }
 
   String truncateString(String str, width) {
@@ -50,7 +50,6 @@ class AccessLogItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-
     var currentLocal = context.locale;
     return Dismissible(
       key: UniqueKey(),

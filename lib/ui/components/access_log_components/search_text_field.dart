@@ -82,6 +82,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
     return Container(
       height: 35,
       child: TextField(
+        style: TextStyle(color: Colors.white),
         controller: _textEditingController,
         decoration: InputDecoration(
           suffixIcon: _textEditingController.text.isEmpty

@@ -33,5 +33,9 @@ abstract class  LocaleKeys {
   static const delete_warning_comment_end = 'delete_warning_comment_end';
   static const delete_warning_deleteButton = 'delete_warning_deleteButton';
   static const delete_warning_deleteCancel = 'delete_warning_deleteCancel';
+  static const change_lanuage_alert_title = 'change_lanuage_alert_title';
+  static const change_language_alert_text = 'change_language_alert_text';
+  static const change_language_alert_now = 'change_language_alert_now';
+  static const change_language_alert_later = 'change_language_alert_later';
 
 }

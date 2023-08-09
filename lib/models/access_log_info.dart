@@ -59,11 +59,11 @@ class AccessLogInfo {
   }
 
   String getDate(String local) {
-    var formatter;
+    var formatter = null;
     if (local == "ar") {
       formatter = DateFormat.yMMMMd('ar');
     } else {
-      formatter = DateFormat('MMM dd, yyyy');
+      formatter = DateFormat.yMMMMd('en');
     }
     var date = DateTime.parse(timeStamp + " " + clock);
 

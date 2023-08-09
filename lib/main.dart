@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:smart_gate/provider/user_info_provider.dart';
 import 'package:smart_gate/routing/routes.dart';
 import 'package:smart_gate/ui/screens/access_log_screen.dart';
+import 'package:smart_gate/utility/presistant_storage.dart';
 
 import 'generated/codegen_loader.g.dart';
 
@@ -22,6 +23,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void getlocale() async {
+      var currentLanguage = await PresistentStorage().getCurrentLanguage();
+      if (currentLanguage != null)
+        EasyLocalization.of(context)?.setLocale(Locale(currentLanguage));
+    }
+
+    getlocale();
     return ChangeNotifierProvider<UserInfo>(
       create: (context) => UserInfo(),
       child: MaterialApp(

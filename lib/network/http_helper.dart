@@ -23,7 +23,7 @@ class HttpHelper {
     }
   }
 
-  static Future<dynamic> getAccessLogInfo() async {
+  static Future<dynamic> getAccessLogInfo(int currentPage) async {
     // Map<String, String> headers = new Map({'l', 'l'})
     var headers = {
       HttpHeaders.authorizationHeader:
